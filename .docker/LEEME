@@ -1,0 +1,17 @@
+0.- Info previa
+    - Todo lo que quieras guardar que lo ignore git en la carpeta "extra-data" (por ejemplo el dump de BBDD, etc)
+    - Los archivos binarios de mysql del contenedor se guardarán en un volumen de docker llamado db-data (para que los cambios sean persistentes). Importante no "toquetearlos". Si quieres ver info relacionada con este contenedor -> docker volume inspect docker_db-data
+
+1.- Lanzar el comando (desde la carpeta donde se encuentra docker-compose.yml) -> docker-compose up -d --build (se generan los contenedores necesarios)
+
+2.a.- Existen 2 opciones para el volcado de datos en BBDD:
+    2.a.1 .- Si no se tiene una copia de BBDD anterior se lanza el script -> ./generar_nueva_bbdd (con ello se genera una estructura "limpia" para empezar a trabajar)
+    2.a.2 .- Si se tiene un dump anterior -> cat extra-data/<nombre-dump-sql> | docker exec -i avaibook_db mysql --user=root
+2.b.- Si estás en Windows hay que lanzar el script -> .generar_archivo_hosts (pone la IP de docker para que sea localhost)
+
+
+3.- Para trabajar en el día a día
+    - Iniciar los contenedores para trabajar (desde la carpeta donde se encuentra docker-compose.yml) -> docker-compose start
+    - Parar los contenedores (desde la carpeta donde se encuentra docker-compose.yml) -> docker-compose stop
+    - Ver los contenedores arrancados -> docker-compose ps
+    - Ver el log de los contenedores -> docker-compose logs

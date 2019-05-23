@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+{% block title %}New Task for Cesáreo{% endblock %}
+
+{% block body %}
+    <h1>Create new Task please</h1>
+
+    {{ form_start(form) }}
+        {{ form_errors(form.title) }}
+        {{ form_label(form.title) }}
+        {{ form_widget(form.title) }}
+
+        {{ form_errors(form.description) }}
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description, { attr: { placeholder: 'Escribe tu descripción' } }) }}
+
+        <button class="btn">{{ button_label|default('Save') }}</button>
+
+    {{ form_end(form) }}
+
+    <a href="{{ path('task_index') }}">back to list</a>
+{% endblock %}

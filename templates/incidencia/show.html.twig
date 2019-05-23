@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Incidencia{% endblock %}
+
+{% block body %}
+    <h1>Incidencia</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ incidencia.id }}</td>
+            </tr>
+            <tr>
+                <th>Título</th>
+                <td>{{ incidencia.titulo }}</td>
+            </tr>
+            <tr>
+                <th>Descripción</th>
+                <td>{{ incidencia.descripcion }}</td>
+            </tr>
+            <tr>
+                <th>Fecha de creación</th>
+                <td>{{ incidencia.fechaCreacion ? incidencia.fechaCreacion|date('d-m-Y H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Resuelto</th>
+                <td>{{ incidencia.resuelta }}</td>
+            </tr>
+            <tr>
+                <th>Fecha de resolución</th>
+                <td>{{ incidencia.fechaResolucion ? incidencia.fechaResolucion|date('d-m-Y H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Categoría</th>
+                <td>{{ (incidencia.categoria ? incidencia.categoria.nombre : 'Sin categoría') }}</td>
+            </tr>
+            <tr>
+                <th>Tags</th>
+                <td>
+                    {% for tags in incidencia.tag %}
+                        {{ tags.titulo }},
+                    {% else %}
+                        Sin tags
+                    {% endfor %}
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% for message in app.flashes('notice') %}
+        <div class="alert alert-warning">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <a href="{{ path('incidencia_index') }}" class="btn btn-primary">volver al listado</a>
+
+    <a href="{{ path('incidencia_edit', {'id': incidencia.id}) }}" class="btn btn-primary">editar</a>
+
+{#    {{ include('incidencia/_delete_form.html.twig') }}#}
+{% endblock %}

@@ -1,0 +1,3 @@
+if [ `docker-machine ip` ];then MACHINE=`docker-machine ip`;else MACHINE='127.0.0.1';fi
+echo $MACHINE' yonkis.local' > extra-data/hosts;
+if [ `uname -a | grep 'Linux' | wc -l` == 0 ];then `cp -a extra-data/hosts /c/Windows/System32/drivers/etc/`;else `cp -a extra-data/hosts /etc/`;fi

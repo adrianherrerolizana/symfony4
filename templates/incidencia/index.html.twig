@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block body %}
+    <h1>Incidencias</h1>
+
+    {{ form(form) }}
+    <table class="table col-xs-6">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Título</th>
+                <th>Descripcion</th>
+                <th>Fecha de creación</th>
+                <th>Resuelto</th>
+                <th>Fecha de resolución</th>
+                <th>Categoría</th>
+                <th>Tags</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for incidencia in incidencias %}
+            <tr>
+                <td>{{ incidencia.id }}</td>
+                <td>{{ incidencia.titulo }}</td>
+                <td>{{ incidencia.descripcion }}</td>
+                <td>{{ incidencia.fechaCreacion ? incidencia.fechaCreacion|fechaFormato('d-M-Y H:i:s') : '' }}</td>
+                <td>{{ incidencia.resuelta }}</td>
+                <td>{{ incidencia.fechaResolucion ? incidencia.fechaResolucion|fechaFormato('d-m-Y') : '' }}</td>
+                <td>{{ incidencia.categoria ? incidencia.categoria.nombre : '*Sin categoría*' }}</td>
+                <td>{{ incidencia.tag|length > 0 ? incidencia.tag|join(', ') : 'Sin tags'}}<td>
+                    <a href="{{ path('incidencia_show', {'id': incidencia.id}) }}" class="btn btn-primary">Ver</a>
+                    <a href="{{ path('incidencia_edit', {'id': incidencia.id}) }}" class="btn btn-primary">Editar</a>
+                    <a href="{{ path('incidencia_delete', {'id': incidencia.id}) }}" class="btn btn-primary" onclick="return confirm('Estás seguro de eliminar la incidencia?')">Eliminar</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no existen incidencias</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('incidencia_new') }}" class="btn btn-primary">Crear nueva incidencia</a>
+    <a href="{{ path('categoria_index') }}" class="btn btn-primary">Ir a categorías</a>
+{% endblock %}

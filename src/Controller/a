@@ -1,0 +1,48 @@
+entidad => incidencia
+    - Título *
+    - Descripción
+    - Fecha creación *
+    - Resuelto (Sí / no) *
+
+Una vez creada la entity se e añade a mano el campo:
+    - Fecha resolución
+
+
+Creamos un CRUD a mano
+
+En nuestro CRUD, tanto al crear como al editar, si ha ido correcto, enviar al show y mostrar un mensaje diciendo que todo ha sido OK usando flash messages.
+
+En nuestro CRUD, el borrar que sea un enlace por get con confirmacion JS
+
+
+Entidad categoría
+Relación + issue
+
+
+
+
+
+
+
+
+
+
+
+
+
+Crear un nuevo campo en incidencias que sea subir un archivo adjunto
+
+Al guardar una incidencia que rellene un campo que sea un código (ID incidencia|año actual)
+
+
+
+
+
+
+
+
+
+Crear 3 usuarios con 2 roles, comercial y admin
+Cada comercial sólo podrá ver sus propias incidencias y el admin todas
+
+Añadir también en las categorías el multiidoma

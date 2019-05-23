@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+{% block title %}Nueva incidencia{% endblock %}
+
+{% block body %}
+    <h1>Crea una nueva incidencia</h1>
+
+    {{ form_start(form) }}
+        {{ form_errors(form.titulo) }}
+        {{ form_label(form.titulo) }}
+        {{ form_widget(form.titulo) }}
+
+        {{ form_errors(form.descripcion) }}
+        {{ form_label(form.descripcion) }}
+        {{ form_widget(form.descripcion, { attr: { placeholder: 'Escribe tu descripción' } }) }}
+
+        {{ form_row(form.fechaCreacion) }}
+        {{ form_row(form.resuelta) }}
+        {{ form_row(form.fechaResolucion) }}
+
+        {{ form_row(form.categoria) }}
+
+        {{ form_row(form.tag) }}
+
+        <button class="btn btn-primary">{{ button_label|default('Guardar') }}</button>
+
+    {{ form_end(form) }}
+
+    <a href="{{ path('incidencia_index') }}" class="btn btn-primary">Volver al listado</a>
+{% endblock %}

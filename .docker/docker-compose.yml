@@ -1,0 +1,38 @@
+version: "2"
+services:
+    www:
+        container_name: symfony_www
+        build: web
+        restart: always
+        ports:
+            - "80:80"
+        volumes:
+            - ../:/var/www/html
+            - ./web/000-default.conf:/etc/apache2/sites-available/000-default.conf
+            - ./web/hosts:/etc/hosts
+        links:
+            - db:db
+        networks:
+            - default
+    db:
+        container_name: symfony_db
+        image: mariadb:10.1.26
+        restart: always
+        ports:
+            - "3307:3306"
+        volumes:
+           - db-data:/var/lib/mysql
+           - ../:/var/www/html
+        environment:
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+            TZ: Europe/Madrid
+    phpmyadmin:
+        container_name: symfony_phpmyadmin
+        image: phpmyadmin/phpmyadmin
+        restart: always
+        links:
+            - db:db
+        ports:
+            - 81:80
+volumes:
+    db-data:
