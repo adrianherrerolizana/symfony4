@@ -33,6 +33,11 @@ class User implements UserInterface
      */
     private $password;
 
+    /**
+     * @ORM\Column(type="string", length=9, unique=true)
+     */
+    private $dni;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -110,4 +115,20 @@ class User implements UserInterface
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
+
+	/**
+	 * @return mixed
+	 */
+	public function getDni()
+	{
+		return $this->dni;
+	}
+
+	/**
+	 * @param mixed $dni
+	 */
+	public function setDni($dni): void
+	{
+		$this->dni = $dni;
+	}
 }

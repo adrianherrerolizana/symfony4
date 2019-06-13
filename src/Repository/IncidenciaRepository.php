@@ -63,4 +63,27 @@ class IncidenciaRepository extends ServiceEntityRepository
         ;
         return $sql ->getQuery()->getResult();
     }
+
+    public function findByLastCreated()
+    {
+
+        $sql = $this->createQueryBuilder('i');
+		$sql->andWhere('i.fechaCreacion >= :valFechaCreacion')
+			->setParameter('valFechaCreacion', new \DateTime('-3 day'));
+        $sql->orderBy('i.fechaCreacion', 'ASC');
+
+        return $sql ->getQuery()->getResult();
+
+    }
+    public function findByLastResolved()
+    {
+
+        $sql = $this->createQueryBuilder('i');
+		$sql->andWhere('i.fechaResolucion >= :valfechaResolucion')
+			->setParameter('valfechaResolucion', new \DateTime('-3 day'));
+        $sql->orderBy('i.fechaResolucion', 'ASC');
+
+        return $sql ->getQuery()->getResult();
+
+    }
 }

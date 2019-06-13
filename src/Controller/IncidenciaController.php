@@ -10,6 +10,8 @@ use App\Repository\IncidenciaRepository;
 use App\Services\GenerarCodigo;
 use App\Services\MostrarMensaje;
 use App\Managers\IncidenciaManager;
+use Knp\Component\Pager\PaginatorInterface;
+use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +27,7 @@ class IncidenciaController extends AbstractController
     /**
      * @Route("/", name="incidencia_index")
      */
-    public function index(Request $request, IncidenciaRepository $incidenciaRepository): Response
+    public function index(Request $request, IncidenciaRepository $incidenciaRepository, PaginatorInterface $paginator): Response
     {
     	$formSearch = $this->createForm(IncidenciaSearchType::class);
     	$formSearch->handleRequest($request);
@@ -36,8 +38,19 @@ class IncidenciaController extends AbstractController
     		$incidencias = $incidenciaRepository->findBySearch($tituloSearch, $categoriaSearch);
 		}else
 			$incidencias = $incidenciaRepository->findAll();
+
+    	// Paginate the results of the query
+        $incidenciasPaginadas = $paginator->paginate(
+            // Doctrine Query, not results
+            $incidencias,
+            // Define the page parameter
+            $request->query->getInt('page', 1),
+            // Items per page
+            5
+        );
+
         return $this->render('incidencia/index.html.twig', [
-            'incidencias' => $incidencias,
+            'incidencias' => $incidenciasPaginadas,
 			'form' => $formSearch->createView(),
         ]);
     }
@@ -79,6 +92,41 @@ class IncidenciaController extends AbstractController
             'incidencia' => $incidencia,
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/filterLastCreated", name="incidencia_filterLastCreated")
+     */
+    public function filterLastCreated(Request $request, IncidenciaRepository $incidenciaRepository): Response
+    {
+
+        $incidencias = $incidenciaRepository->findByLastCreated();
+
+        $formSearch = $this->createForm(IncidenciaSearchType::class);
+    	$formSearch->handleRequest($request);
+
+        return $this->render('incidencia/index.html.twig', [
+            'incidencias' => $incidencias,
+	        'form' => $formSearch->createView(),
+        ]);
+
+    }
+
+    /**
+     * @Route("/filterLastResolved", name="incidencia_filterLastResolved")
+     */
+    public function filterLastResolved(Request $request, IncidenciaRepository $incidenciaRepository): Response
+    {
+        $incidencias = $incidenciaRepository->findByLastResolved();
+
+        $formSearch = $this->createForm(IncidenciaSearchType::class);
+    	$formSearch->handleRequest($request);
+
+        return $this->render('incidencia/index.html.twig', [
+            'incidencias' => $incidencias,
+	        'form' => $formSearch->createView(),
+        ]);
+
     }
 
     /**
@@ -128,4 +176,5 @@ class IncidenciaController extends AbstractController
 
         return $this->redirectToRoute('incidencia_index');
     }
+
 }
