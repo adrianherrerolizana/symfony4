@@ -22,6 +22,7 @@ class UserType extends AbstractType
 	                ]
                 ])
             ->add('password')
+            ->add('dni')
         ;
     }
 
