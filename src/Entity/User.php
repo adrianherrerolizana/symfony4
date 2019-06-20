@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -32,6 +33,12 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * @ORM\Column(type="string", length=9, unique=true)
+     * @ContieneDni()
+     */
+    private $dni;
 
     public function getId(): ?int
     {
@@ -110,4 +117,20 @@ class User implements UserInterface
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
+
+	/**
+	 * @return mixed
+	 */
+	public function getDni()
+	{
+		return $this->dni;
+	}
+
+	/**
+	 * @param mixed $dni
+	 */
+	public function setDni($dni): void
+	{
+		$this->dni = $dni;
+	}
 }
