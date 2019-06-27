@@ -34,7 +34,9 @@ class IncidenciaType extends AbstractType
 			->add('categoria')
 			->add('tag')
 			->add('urlImagen', FileType::class, [
-					'label' => 'Adjunte una imagen'
+					'label' => 'Adjunte una imagen',
+					'data_class' => null,
+					'required' => false
 			])
         ;
     }

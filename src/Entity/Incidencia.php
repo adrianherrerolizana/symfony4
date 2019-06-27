@@ -31,16 +31,19 @@ class Incidencia
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank
      */
     private $fechaCreacion;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Assert\NotBlank
      */
     private $resuelta;
 
     /**
      * @ORM\Column(type="date")
+     * @Assert\NotBlank
      */
     private $fechaResolucion;
 

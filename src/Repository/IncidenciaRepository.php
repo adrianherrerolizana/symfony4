@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Incidencia;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -64,6 +65,17 @@ class IncidenciaRepository extends ServiceEntityRepository
         return $sql ->getQuery()->getResult();
     }
 
+    public function findAllUser($userId)
+    {
+
+        $sql = $this->createQueryBuilder('i');
+		$sql->andWhere('i.user = :valuserId')
+				->setParameter('valuserId', $userId);
+        $sql->orderBy('i.id', 'ASC');
+
+        return $sql ->getQuery()->getResult();
+
+    }
     public function findByLastCreated()
     {
 

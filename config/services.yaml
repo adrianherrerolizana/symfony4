@@ -29,3 +29,6 @@ services:
     App\Services\MostrarMensaje:
         arguments:
             $titulo: 'prueba'
+    App\Services\FileUploader:
+        arguments:
+            $targetDirectory: 'uploads/documents'

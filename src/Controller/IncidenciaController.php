@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Incidencia;
+use App\Entity\User;
 use App\Events\IncidenciaEvent;
 use App\Form\IncidenciaSearchType;
 use App\Form\IncidenciaType;
 use App\Repository\IncidenciaRepository;
+use App\Services\FileUploader;
 use App\Services\GenerarCodigo;
 use App\Services\MostrarMensaje;
 use App\Managers\IncidenciaManager;
@@ -17,6 +19,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 /**
  * @Route("/incidencia")
@@ -32,14 +35,16 @@ class IncidenciaController extends AbstractController
     	$formSearch = $this->createForm(IncidenciaSearchType::class);
     	$formSearch->handleRequest($request);
 
+    	$user = $this->getUser();
+
     	if($formSearch->isSubmitted()){
     		$categoriaSearch = $formSearch->getData()['categoriaSearch'];
     		$tituloSearch = $formSearch->getData()['tituloSearch'];
     		$incidencias = $incidenciaRepository->findBySearch($tituloSearch, $categoriaSearch);
 		}else
-			$incidencias = $incidenciaRepository->findAll();
+			$incidencias = $incidenciaRepository->findAllUser($user->getId());
 
-    	// Paginate the results of the query
+    	// Paginate the r   esults of the query
         $incidenciasPaginadas = $paginator->paginate(
             // Doctrine Query, not results
             $incidencias,
@@ -59,7 +64,7 @@ class IncidenciaController extends AbstractController
     /**
      * @Route("/new", name="incidencia_new", methods={"GET","POST"})
      */
-    public function new(Request $request, IncidenciaManager $incidenciaManager, EventDispatcherInterface $dispacher, GenerarCodigo $generarCodigo): Response
+    public function new(Request $request, IncidenciaManager $incidenciaManager, EventDispatcherInterface $dispacher, GenerarCodigo $generarCodigo, FileUploader $fileUploader): Response
     {
         $incidencia = $incidenciaManager->newObject();
 
@@ -69,8 +74,8 @@ class IncidenciaController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
 			$file = $form['urlImagen']->getData();
-			$filename = md5(uniqid()).'.'.$file->guessExtension();
-			$file->move('uploads/documents', $filename);
+
+	        $filename = $fileUploader->upload($file);
 
 			$incidencia->setUrlImagen($filename);
 
@@ -145,12 +150,20 @@ class IncidenciaController extends AbstractController
     /**
      * @Route("/{id}/edit", name="incidencia_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, Incidencia $incidencia, IncidenciaManager $incidenciaManager): Response
+    public function edit(Request $request, Incidencia $incidencia, IncidenciaManager $incidenciaManager, FileUploader $fileUploader): Response
     {
+    	$this->denyAccessUnlessGranted('view', $incidencia);
         $form = $this->createForm(IncidenciaType::class, $incidencia);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+        	$file = $form['urlImagen']->getData();
+
+			$filename = $fileUploader->upload($file);
+
+			$incidencia->setUrlImagen($filename);
+
             $incidenciaManager->update($incidencia);
 
             $this->addFlash('success', 'Creado correctamente!');
@@ -171,6 +184,7 @@ class IncidenciaController extends AbstractController
      */
     public function delete(Request $request, Incidencia $incidencia, IncidenciaManager $incidenciaManager): Response
     {
+    	$this->denyAccessUnlessGranted('view', $incidencia);
         //if ($this->isCsrfTokenValid('delete'.$incidencia->getId(), $request->request->get('_token')))
             $incidenciaManager->delete($incidencia);
 

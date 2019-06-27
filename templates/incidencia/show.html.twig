@@ -36,6 +36,15 @@
                 <td>{{ (incidencia.categoria ? incidencia.categoria.nombre : 'Sin categoría') }}</td>
             </tr>
             <tr>
+                <th>Adjunto</th>
+                <td>{%  if incidencia.urlImagen %}
+                        <a href="{{ asset('/uploads/documents/' ~ incidencia.urlImagen) }}" target="_black">Ver adjunto</a>
+                    {% else %}
+                        Sin adjunto
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
                 <th>Tags</th>
                 <td>
                     {% for tags in incidencia.tag %}
