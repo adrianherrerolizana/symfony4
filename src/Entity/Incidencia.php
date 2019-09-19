@@ -76,6 +76,12 @@ class Incidencia
      */
     private $user;
 
+    /**
+    * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="asignada")
+    * @ORM\JoinColumn(name="asignada",referencedColumnName="id")
+    */
+   protected $asignada;
+
 
     public function __construct() {
         $this->tag = new ArrayCollection();
@@ -226,5 +232,21 @@ class Incidencia
 
         return $this;
     }
+
+	/**
+	 * @return mixed
+	 */
+	public function getAsignada()
+	{
+		return $this->asignada;
+	}
+
+	/**
+	 * @param mixed $asignada
+	 */
+	public function setAsignada($asignada): void
+	{
+		$this->asignada = $asignada;
+	}
 
 }

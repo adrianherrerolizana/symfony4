@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
@@ -38,11 +39,50 @@ class IncidenciaController extends AbstractController
     	$user = $this->getUser();
 
     	if($formSearch->isSubmitted()){
+
     		$categoriaSearch = $formSearch->getData()['categoriaSearch'];
     		$tituloSearch = $formSearch->getData()['tituloSearch'];
-    		$incidencias = $incidenciaRepository->findBySearch($tituloSearch, $categoriaSearch);
-		}else
-			$incidencias = $incidenciaRepository->findAllUser($user->getId());
+
+    		$busqueda = 1;
+    		$userSearch = null;
+
+            if ($this->isGranted('ROLE_COMERCIAL')) {
+
+    			$userSearch = $user;
+
+            } elseif ($this->isGranted('ROLE_SOPORTE')) {
+
+    			$userSearch = $user;
+                $busqueda = 2;
+
+            }
+
+    		if ($busqueda == 1)
+    		    $incidencias = $incidenciaRepository->findBySearch($tituloSearch, $categoriaSearch, $userSearch);
+    		else
+    		    $incidencias = $incidenciaRepository->findBySearchSoporte($tituloSearch, $categoriaSearch, $userSearch);
+
+		}else {
+
+    		$busqueda = 1;
+    		$userSearch = null;
+
+    		if ($this->isGranted('ROLE_COMERCIAL')) {
+
+    			$userSearch = $user;
+
+            } elseif ($this->isGranted('ROLE_SOPORTE')) {
+
+    			$userSearch = $user;
+                $busqueda = 2;
+
+            }
+
+    		if ($busqueda == 1)
+		        $incidencias = $incidenciaRepository->findAllUser($userSearch);
+    		else
+		        $incidencias = $incidenciaRepository->findAllUserSoporte($userSearch);
+	    }
 
     	// Paginate the r   esults of the query
         $incidenciasPaginadas = $paginator->paginate(
@@ -97,6 +137,26 @@ class IncidenciaController extends AbstractController
             'incidencia' => $incidencia,
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/solved.json", name="issue_set_solved", methods={"POST"})
+     */
+    public function solved(Request $request, IncidenciaManager $incidenciaManager): Response
+    {
+        $issueId = $request->get('id');
+        $incidencia = $this->getDoctrine()->getRepository(Incidencia::class)->find($issueId);
+
+        $this->denyAccessUnlessGranted('edit', $incidencia);
+
+        $incidenciaManager->setSolved($incidencia);
+
+        return new JsonResponse(
+            $this->renderView(
+                'incidencia/incidencia.html.twig',
+                array('incidencia' => $incidencia)
+            )
+        );
     }
 
     /**
@@ -156,21 +216,65 @@ class IncidenciaController extends AbstractController
         $form = $this->createForm(IncidenciaType::class, $incidencia);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($request->isXmlHttpRequest()) {
+            if ($form->isSubmitted()) {
+                if ($form->isValid()) {
 
-        	$file = $form['urlImagen']->getData();
+                    $file = $form['urlImagen']->getData();
 
-			$filename = $fileUploader->upload($file);
+                    if (isset($file)) {
 
-			$incidencia->setUrlImagen($filename);
+                        $filename = $fileUploader->upload($file);
 
-            $incidenciaManager->update($incidencia);
+                        $incidencia->setUrlImagen($filename);
 
-            $this->addFlash('success', 'Creado correctamente!');
+                    }
 
-            return $this->redirectToRoute('incidencia_show', [
-                'id' => $incidencia->getId(),
-            ]);
+                    $issue = $incidenciaManager->update($incidencia);
+
+                    return $this->render(
+                        'incidencia/incidencia.html.twig',
+                        array(
+                            'incidencia' => $issue,
+                        )
+                    );
+                }
+            }
+
+        } else {
+            if ($form->isSubmitted()) {
+                if ($form->isValid()) {
+
+                    $file = $form['urlImagen']->getData();
+
+                    if (isset($file)) {
+
+                        $filename = $fileUploader->upload($file);
+
+                        $incidencia->setUrlImagen($filename);
+
+                    }
+
+                    $issue = $incidenciaManager->update($incidencia);
+
+                    $this->addFlash(
+                        'success',
+                        'Se ha modificado correctamente'
+                    );
+
+                    $this->addFlash('success', 'Creado correctamente!');
+
+                    return $this->redirectToRoute('incidencia_show', [
+                        'id' => $incidencia->getId(),
+                    ]);
+                } else {
+                    $this->addFlash(
+                        'notice',
+                        'Se han producido errores, revise el formulario.'
+                    );
+                }
+            }
+
         }
 
         return $this->render('incidencia/edit.html.twig', [

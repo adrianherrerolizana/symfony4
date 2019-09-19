@@ -66,7 +66,9 @@
 
     <a href="{{ path('incidencia_index') }}" class="btn btn-primary">volver al listado</a>
 
-    <a href="{{ path('incidencia_edit', {'id': incidencia.id}) }}" class="btn btn-primary">editar</a>
+    {% if is_granted('ROLE_SOPORTE') == false %}
+        <a href="{{ path('incidencia_edit', {'id': incidencia.id}) }}" class="btn btn-primary">editar</a>
+    {% endif %}
 
 {#    {{ include('incidencia/_delete_form.html.twig') }}#}
 {% endblock %}

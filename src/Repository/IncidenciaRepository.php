@@ -49,7 +49,7 @@ class IncidenciaRepository extends ServiceEntityRepository
     }
     */
 
-    public function findBySearch($titulo, $categoria)
+    public function findBySearch($titulo, $categoria, $userId)
     {
         $sql = $this->createQueryBuilder('i');
         if (!empty($titulo)) {
@@ -60,6 +60,30 @@ class IncidenciaRepository extends ServiceEntityRepository
 			$sql->andWhere('i.categoria = :valCategoria')
 				->setParameter('valCategoria', $categoria);
 		}
+        if (!is_null($userId)) {
+	        $sql->andWhere('i.user = :valuserId')
+		        ->setParameter('valuserId', $userId);
+        }
+            $sql->orderBy('i.id', 'ASC');
+        ;
+        return $sql ->getQuery()->getResult();
+    }
+
+    public function findBySearchSoporte($titulo, $categoria, $userId)
+    {
+        $sql = $this->createQueryBuilder('i');
+        if (!empty($titulo)) {
+			$sql->andWhere('i.titulo LIKE :valTitulo')
+				->setParameter('valTitulo', '%' . $titulo . '%');
+		}
+        if (!empty($categoria)) {
+			$sql->andWhere('i.categoria = :valCategoria')
+				->setParameter('valCategoria', $categoria);
+		}
+        if (!is_null($userId)) {
+	        $sql->andWhere('i.asignada = :valasignadaId')
+		        ->setParameter('valasignadaId', $userId);
+        }
             $sql->orderBy('i.id', 'ASC');
         ;
         return $sql ->getQuery()->getResult();
@@ -69,8 +93,24 @@ class IncidenciaRepository extends ServiceEntityRepository
     {
 
         $sql = $this->createQueryBuilder('i');
-		$sql->andWhere('i.user = :valuserId')
-				->setParameter('valuserId', $userId);
+        if (!is_null($userId)) {
+	        $sql->andWhere('i.user = :valuserId')
+		        ->setParameter('valuserId', $userId);
+        }
+        $sql->orderBy('i.id', 'ASC');
+
+        return $sql ->getQuery()->getResult();
+
+    }
+
+    public function findAllUserSoporte($userId)
+    {
+
+        $sql = $this->createQueryBuilder('i');
+        if (!is_null($userId)) {
+	        $sql->andWhere('i.asignada = :valasignadaId')
+		        ->setParameter('valasignadaId', $userId);
+        }
         $sql->orderBy('i.id', 'ASC');
 
         return $sql ->getQuery()->getResult();

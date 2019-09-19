@@ -36,6 +36,16 @@ class IncidenciaManager
 		return $incidencia;
     }
 
+    public function setSolved(Incidencia $incidencia): Incidencia
+    {
+        $incidencia->setResuelta(true);
+        $incidencia->setFechaResolucion(new \DateTime());
+
+        $this->em->flush();
+
+        return $incidencia;
+    }
+
     public function delete($incidencia) : void
     {
 		$this->em->remove($incidencia);

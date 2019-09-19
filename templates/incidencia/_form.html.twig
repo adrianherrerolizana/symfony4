@@ -1,4 +1,4 @@
-{{ form_start(form) }}
+{{ form_start(form, {'attr' : {'id' : 'edita_incidencia'}}) }}
     {{ form_widget(form) }}
-    <button class="btn btn-primary">{{ button_label|default('Guardar') }}</button>
+    <button href='{{path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params'))}}' class="btn btn-primary {{ button_class|default('') }}">{{ button_label|default('Guardar') }}</button>
 {{ form_end(form) }}
